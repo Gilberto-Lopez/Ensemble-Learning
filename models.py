@@ -13,7 +13,9 @@ from keras.layers import Conv2D
 from keras.layers import MaxPooling2D
 from keras.layers import Flatten
 from keras.layers import Dense
-#from keras.preprocessing.image import ImageDataGenerator
+from keras.layers import Dropout
+from keras.optimizers import Adam
+from keras.regularizers import l2
 
 # =============================================================================
 # Cargar datos
@@ -38,20 +40,32 @@ X_test,y_test = X[train_size:],y[train_size:]
 
 classifier_1 = Sequential()
 
-classifier_1.add(Conv2D(filters = 30,
-                        kernel_size = (127,3),
-                        strides = (1,2),
+classifier_1.add(Conv2D(filters = 100,
+                        kernel_size = (127,10),
+                        strides = (1,3),
                         input_shape = (127, 2900, 1),
                         activation = 'relu'))
+classifier_1.add(MaxPooling2D(pool_size = (1,3)))
+
+classifier_1.add(Conv2D(filters = 30,
+                        kernel_size = (1,4),
+                        strides = (1,2),
+                        activation = 'relu'))
 classifier_1.add(MaxPooling2D(pool_size = (1,2)))
+
+classifier_1.add(Dropout(.5))
 
 classifier_1.add(Flatten())
 
 classifier_1.add(Dense(64, activation = 'relu'))
 
-classifier_1.add(Dense(10, activation = 'softmax'))
+classifier_1.add(Dense(64, activation = 'relu'))
 
-classifier_1.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
+classifier_1.add(Dense(10, activation = 'softmax',
+                       kernel_regularizer = l2(0.0001)))
+
+classifier_1.compile(optimizer = Adam(0.0001),
+                     loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
 # =============================================================================
 # Entrenamiento
@@ -60,7 +74,7 @@ classifier_1.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metr
 Xb,yb = bootstrap_set(X_train,y_train,
                       int(np.floor(train_size*.8)))
 
-classifier_1.fit(Xb,yb,batch_size = 32,epochs = 7,shuffle = False,
+classifier_1.fit(Xb,yb,batch_size = 64,epochs = 15,
                  validation_data = (X_test,y_test))
 
 classifier_1.save('classifier_1')
