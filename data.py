@@ -45,7 +45,7 @@ def load_dataset ():
 
   return X,y
 
-def bootstrap_set (S, labels, size):
+def bootstrap_set (S, labels, size, seed = None):
   """Genera una muestra aleatoria con remplazo de S del tamaño indicado.
 
   Parametros:
@@ -55,7 +55,9 @@ def bootstrap_set (S, labels, size):
   labels : np.array
     Las etiquetas de los elementos de S.
   size : int
-    El tamaño de la muestra
+    El tamaño de la muestra.
+  seed : int, default: None
+    Semilla para el generador de numeros aleatorios de NumPy.
 
   Regresa:
   --------
@@ -64,6 +66,9 @@ def bootstrap_set (S, labels, size):
   test_labels : np.array
     Las etiquetas de los elementos de la muestra aleatoria
   """
+  if seed:
+    np.random.seed(seed)
+
   idx = resample(np.arange(S.shape[0]),replace = True,n_samples = size)
 
   train_set = S[idx]
