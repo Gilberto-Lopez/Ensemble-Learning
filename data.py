@@ -10,6 +10,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import misc
+from sklearn.utils import resample
 
 def load_dataset ():
   """Carga el dataset de imagenes de espectrogramas que estan en el directorio
@@ -63,7 +64,7 @@ def bootstrap_set (S, labels, size):
   test_labels : np.array
     Las etiquetas de los elementos de la muestra aleatoria
   """
-  idx = np.random.permutation(S.shape[0])[:size]
+  idx = resample(np.arange(S.shape[0]),replace = True,n_samples = size)
 
   train_set = S[idx]
   train_labels = labels[idx]
