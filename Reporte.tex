@@ -11,7 +11,7 @@
 \usepackage{hyperref}
 % \usepackage{listings}
 % \usepackage{xcolor}
-
+\renewcommand{\vec}[1]{\mathbf{#1}}
 \decimalpoint
 
 \title{Clasificación de canciones por género en base a la música\\
@@ -80,6 +80,65 @@ del término adoptada por los autores del presente escrito.}, es el proceso de u
 distintos modelos, ya sean clasificadores o expertos, generados y combinados
 estratégicamente para lograr un mejor desempeño en tareas de predicción (clasificación
 o regresión).
+
+Un clasificador colectivo es un clasificador cuya predicción está en función de
+las predicciones individuales de los modelos que lo componen. Se usan principalmente
+para mejorar el desempeño individual de los modelos en conjunto, evitar seleccionar y trabajar
+con un clasificador pobre y asignar una ``confianza'' a las decisiones hechas
+por los modelos individuales\cite{scholarpedia}.
+
+\subsection{Bagging}
+
+El clasificador colectivo que usaremos es \textit{Bagging}\footnote{Bootstrap
+aggregation.}, un clasificador simple e intuitivo que ha demostrado tener un buen
+desempeño (obviamente, esto si sus componentes tienen buen desempeño). Bagging
+consiste en entrenar clasificadores independientemente sobre muestras aleatorias
+con reemplazo del dataset y clasificar entradas por mayoría de votos en las
+clasificaciones individuales de sus componentes. El algoritmo a continuación:\\
+\textbf{Entrada:}
+\begin{itemize}
+  \item Conjunto de entrenamiento $S$ con conjunto de etiquetas
+  $\{\ell_1,\ldots,\ell_m\}$ para $m$ clases distintas.
+  \item Clasificadores que lo componen $C_1,\ldots,C_k$.
+  \item Porcentaje $F$ de los datos que se usarán para entrenar a cada clasificador.
+\end{itemize}
+\textbf{Entrenamiento:} Para cada clasificador $C_i$:
+\begin{enumerate}
+  \item Tomar una muestra aleatoria con remplazo $S_i$ de $S$ con tamaño $F$ por
+  ciento el tamaño de $S$.
+  \item Entrenar el clasificador $C_i$ con el conjunto $S_i$.
+\end{enumerate}
+\textbf{Clasificación:} Dada una entrada $\vec{x}$:
+\begin{enumerate}
+  \item Evaluar cada componente $C_i$ con $\vec{x}$ para obtener una clase $y_i$.
+  \item Para cada clase $\ell_1,\ldots,\ell_m$, contar el número de etiquetas
+  resultantes de las predicciones de los clasificadores.
+  \item La etiqueta $y$ para $\vec{x}$ es aquella clase que tuvo el mayor conteo
+  en el paso anterior.
+\end{enumerate}
+
+\subsection{Intuición}
+
+El propósito detrás de tomar subconjuntos $S_i$ para cada clasificador $C_i$ es
+tener diversidad en lo aprendido por los clasificadores indivualmente, y por lo
+tanto, diversidad en sus respuestas. Tener diversidad en los componentes de un
+clasificador colectivo nos ayuda a corregir errores hechos por algunos de estos;
+los clasificadores cometen distintos errores en distintas entradas, pero en conjunto
+deciden la ``mejor'' clasificación.
+
+En este caso, usando bagging, la respuesta del clasificador colectivo no tiene
+que ser la respuesta correcta, pero es la mejor respuesta en el sentido que
+tuvo mayor cantidad de votos, esto es, el clasificador confía en que es la
+respuesta correcta basado en las respuestas de sus componentes y el conocimiento
+que tienen.
+
+Si la gran mayoría de los clasificadores responden lo mismo decimos que el clasificador
+colectivo tiene alta confianza en su respuesta, en otro caso, si las respuestas
+no coinciden decimos que el clasificador tiene baja confianza en su respuesta.
+Una respuesta con alta confianza no tiene por que ser correcta, y una con baja
+confianza no tiene que ser incorrecta, pero si los componentes fueron propiamente
+entrenados, en general una respuesta con alta confianza es correcta y con baja
+confianza incorrecta\cite{scholarpedia}.
 
 \section{Datos y preprocesamiento}
 
