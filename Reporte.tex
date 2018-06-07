@@ -152,9 +152,36 @@ Se obtuvo el espectrograma de estos clips, y estos espectrogramas (imágenes
 \texttt{.png}) son los datos que se usaron para realizar una clasificación con
 redes convolucionales.
 
-Los espectrogramas obtenidos son arreglos de 3 dimensiones: tiempo, frecuencia
+Los espectrogramas obtenidos se pueden considerar como arreglos de 3 dimensiones: tiempo, frecuencia
 y amplitud. A la amplitud aplicamos logaritmo base 10 para tener una escala en
-decibeles.
+decibeles. Los espectrogramas resultantes son imágenes de tamaño $127 \times 2900$,
+127 frecuencias registradas en 2900 intervalos de tiempo.
+
+\section{Implementación}
+
+Para implementar las redes convolucionales nos basamos en el procedimiento descrito
+en \cite{audio_recognition}. Las redes convolucionales trabajarán con las
+imágenes de los espectrogramas de las canciones.
+
+Creamos 5 redes convolucionales, con 100 filtros de tamaño $127 \times r$ con
+$r = 5,10,15,20,25$. Los filtros abarcan todo el alto de las imágenes pues solo
+nos interesa analizar los datos en el flujo de tiempo, por lo que vemos todas
+las frecuencias en ventanas de tiempo de longitud $r$.
+
+En \cite{audio_recognition} tienen una red con una única
+capa convolucional pero los filtros tienen tamaño distinto $F \times s$ donde
+$F$ es el número de frecuencias en los espectrogramas y $s$ varía de 3 hasta 25,
+por cada tamaño son 100 filtros. Nosotros dividimos los filtros de distinto
+tamaño (o resolución) en distintos clasificadores y los juntamos en un clasificador
+colectivo.
+
+Tenemos una capa de dropout para evitar sobreajuste al final de las capas
+convolucionales y un perceptrón multicapa al final de la arquitectura que realiza
+la clasificación con \textit{softmax}. Buscamos minimizar el error con
+entropía cruzada.
+
+La implementación se realizó en el lenguaje de programación \textsc{Python 3},
+con el módulo \textsc{Keras} usando \textsc{TensorFlow} como backend.
 
 \section{Experimentación}
 
