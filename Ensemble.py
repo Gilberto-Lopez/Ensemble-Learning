@@ -46,23 +46,27 @@ class Ensemble (object):
         classifier = Sequential()
 
         classifier.add(Conv2D(filters = 100,
-                              kernel_size = (127,15),
+                              kernel_size = (127,25),
                               strides = (1,5),
                               input_shape = (127, 2900, 1),
                               activation = 'relu'))
-        classifier.add(MaxPooling2D(pool_size = (1,2)))
+        classifier.add(MaxPooling2D(pool_size = (1,5)))
 
         classifier.add(Dropout(.5))
 
-        #classifier.add(Conv2D(filters = 64,
-        #                        kernel_size = (1,15),
-        #                        strides = (1,5),
-        #                        activation = 'relu'))
-        #classifier.add(MaxPooling2D(pool_size = (1,5)))
-        #
-        #classifier.add(Dropout(.5))
+        classifier.add(Conv2D(filters = 64,
+                                kernel_size = (1,15),
+                                strides = (1,5),
+                                activation = 'relu'))
+        classifier.add(MaxPooling2D(pool_size = (1,2)))
+        
+        classifier.add(Dropout(.5))
 
         classifier.add(Flatten())
+
+        classifier.add(Dense(128, activation = 'relu'))
+
+        classifier.add(Dropout(.3))
 
         classifier.add(Dense(128, activation = 'relu'))
 

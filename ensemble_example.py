@@ -10,7 +10,7 @@ import numpy as np
 # clasificadores/, el directorio debe existir
 # =============================================================================
 
-Test = Ensemble(5,'clasificadores')
+Test = Ensemble(5,'clasificadores2')
 
 # =============================================================================
 # Cargar datos
@@ -44,7 +44,7 @@ X_test,y_test = X[idx_test],y[idx_test]
 Test.fit (X_train,y_train,(X_test,y_test),
           bootstrap_percent = .9,
           batch_size = 128,
-          epochs = 100)
+          epochs = 15)
 
 # =============================================================================
 # Cargar el modelo colectivo con componentes entrenadas en clasificadores/
