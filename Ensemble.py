@@ -5,6 +5,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import misc
+from scipy import stats
 from sklearn.utils import resample
 from keras.models import Sequential
 from keras.layers import Conv2D
@@ -122,6 +123,8 @@ class Ensemble (object):
       
       i += 1
 
+    self._score()
+
     return self
 
   def predict (X):
@@ -150,6 +153,18 @@ class Ensemble (object):
       l_cls.append(np.argmax(L,axis = 1))
     
     return v_cls,l_cls
+
+  def _score (self, X, y):
+    _,cls = self.predict(X)
+    cls = np.array(cls)
+    ensemble_cls = stats.mode (cls).mode[0]
+
+    cls_true = np.argmax(y,axis = 1)
+    
+    K = (ensemble_cls == cls_true)
+    percent = (np.linalg.norm(K,0)/K.shape)*100.
+
+    print('Ensemble classifier.\nAccuracy on test set: %2.2f %%' % percent)
 
   @staticmethod
   def load_model (path):
