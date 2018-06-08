@@ -109,8 +109,8 @@ class Ensemble (object):
 
     for classifier in self.ensemble:
       # Subconjunto de entrenamiento
-      Xb,yb = bootstrap_set(X_train,y_train,
-                            int(np.floor(train_size*bootstrap_percent)))
+      Xb,yb = Ensemble.bootstrap_set(X_train,y_train,
+                                     int(np.floor(train_size*bootstrap_percent)))
       
       print('\n# ===============================================================================')
       print('# Entrenamiento: Clasificador #%d' % i)
