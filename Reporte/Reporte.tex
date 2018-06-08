@@ -87,6 +87,11 @@ para mejorar el desempeño individual de los modelos en conjunto, evitar selecci
 con un clasificador pobre y asignar una ``confianza'' a las decisiones hechas
 por los modelos individuales\cite{scholarpedia}.
 
+Aquí señalamos que el espacio de hipótesis es una combinación de los espacios
+de los clasificadores individuales, pues un clasificador colectivo es una mezcla
+finita de estos. En nuestro caso, usando cinco redes convolucionales, el espacio
+de hipótesis es una mezcla del mismo espacio cinco veces.
+
 \subsection{Bagging}
 
 El clasificador colectivo que usaremos es \textit{Bagging}\footnote{Bootstrap
@@ -256,12 +261,12 @@ espectrograma, ni solo la letra de canciones, son suficientes para poder encontr
 distinguir los géneros a los que pertenecen. Esto por que existen patrones en los espectrogramas que se repiten
 entre los distintos géneros que hace difícil encontrar patrones distintivos entre géneros. Por ejemplo, la música
 electrónica y el rap/trap de hoy en día tiene una base muy fuerte con los bajos y estos se ven representados de
-manera similar en los espectrogramas, esto se podría comprobar si se observará la matriz de confusión de los clasificadores individuales y del colectivo.
+manera similar en los espectrogramas, esto se podría comprobar si se observara la matriz de confusión de los clasificadores individuales y del colectivo.
 
 Hoy en día se tienen sistemas que ya clasifican música, pero solamente por canción y no por género. Un sistema en
 especifico, Shazam, es capaz de reconocer canciones con el simple hecho de escucharla por pocos segundos. La
 pregunta que se queda abierta es ¿se podrá reconocer el género con un acercamiento parecido al que tiene este
-sistema, el cual se sabe que también usa redes neuronales?, se cree que si, pero primero se debe detectar, de
+sistema, el cual se sabe que también usa redes neuronales?, creemos que sí, pero primero se debe detectar, de
 alguna manera, si los géneros se parecen entre si y poder escoger características mejores y con base en esto poder
 tomar un mejor curso de acción a la hora de clasificar.
 
