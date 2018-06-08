@@ -30,7 +30,7 @@ López García Gilberto Isaac}
 En el primer proyecto, \textit{Sistema de clasificación automática de documentos,
 Clasificación de canciones por género con base en la letra}, atacamos el problema
 de clasificación de canciones por género basándonos solo en la letra
-asumiendo que el léxico tendría un gran peso sobre el género. Esta
+asumiendo que el léxico usado determinaría el género. Esta
 forma de enfrentar el problema no dió buenos resultados pues nuestros algoritmos
 de clasificación tenía un porcentaje de acierto de entre 50 y 60 por ciento,
 básicamente estaban adivinando al azar.
@@ -110,7 +110,7 @@ clasificaciones individuales de sus componentes. El algoritmo a continuación:\\
 \end{enumerate}
 \textbf{Clasificación:} Dada una entrada $\vec{x}$:
 \begin{enumerate}
-  \item Evaluar cada componente $C_i$ con $\vec{x}$ para obtener una clase $y_i$.
+  \item Evaluar cada clasificador $C_i$ con $\vec{x}$ para obtener una clase $y_i$.
   \item Para cada clase $\ell_1,\ldots,\ell_m$, contar el número de etiquetas
   resultantes de las predicciones de los clasificadores.
   \item La etiqueta $y$ para $\vec{x}$ es aquella clase que tuvo el mayor conteo
@@ -140,6 +140,27 @@ confianza no tiene que ser incorrecta, pero si los componentes fueron propiament
 entrenados, en general una respuesta con alta confianza es correcta y con baja
 confianza incorrecta\cite{scholarpedia}.
 
+\subsection{Ventajas y desventajas}
+
+Una ventaja de los clasificadores colectivos es, como ya se mencionó, la capacidad
+de asignar una confianza a las respuestas que da; en el caso de \textit{bagging}
+por mayoría de votos en los clasificadores individuales que han aprendido
+distintas características de los datos. Como lo hacemos los humanos, un clasificador
+colectivo responde con confianza que una muestra pertenece a cierta clase pues
+sus componentes respondieron de la misma manera, como personas discutiendo
+y concluyendo un resultado en base a conocimiento y experiencia personal que
+en conjunto se complementa.
+
+Como desventaja tenemos que entrenar múltiples clasificadores, posiblemente de
+distinta naturaleza, puede ser una tarea difícil y computacionalmente costosa.
+Por el lado de los datos esto puede representar una ventaja: si tenemos un dataset
+de tamaño desmedido, cada clasificador se puede entrenar en un subconjunto de éste
+de manera independiente, por lo que los clasificadores colectivos podrían ser
+una buena opción cuando se traten problemas con grandes cantidades de datos. Más aún,
+\textit{bagging} también aplica para pocos datos pues se basa principalmente en
+muestras con reemplazo para generar los subconjuntos de entrenamiento
+(\textit{bootstrap sampling}).
+
 \section{Datos y preprocesamiento}
 
 El dataset para el proyecto es \textsf{GTZAN Genre Collection}%
@@ -163,62 +184,72 @@ Para implementar las redes convolucionales nos basamos en el procedimiento descr
 en \cite{audio_recognition}. Las redes convolucionales trabajarán con las
 imágenes de los espectrogramas de las canciones.
 
-Creamos 5 redes convolucionales, con 100 filtros de tamaño $127 \times r$ con
-$r = 5,10,15,20,25$. Los filtros abarcan todo el alto de las imágenes pues solo
+Creamos 5 redes convolucionales, con una capa de convolución de 100 filtros de
+tamaño $127 \times 25$ en strides de 5 pixeles, y una capa de max pooling de tamaño
+$1 \times 5$. Los filtros abarcan todo el alto de las imágenes pues solo
 nos interesa analizar los datos en el flujo de tiempo, por lo que vemos todas
-las frecuencias en ventanas de tiempo de longitud $r$.
+las frecuencias en ventanas de tiempo de longitud $25$.
+
+Seguido tenemos otra capa convolucional con 64 filtros de tamaño 15 y strides de
+5 pixeles con una capa de max pooling de tamaño 2 (los mapas de características
+solo tienen una dimensión pues en la primera capa se toman todas las frecuencias).
+
+Finalmente un perceptrón multicapa con arquitectura (128,128,10) donde la última
+capa realiza la clasificación con la función \textit{softmax}. Buscamos minimizar
+el error minimizando la entropía cruzada de la función de clasificación de la red
+y la clasificación real de los datos.
+
+Como regularización aplicamos dropout con un parámetro de 0.5 entre capas, esto
+para evitar sobreajuste de las redes. Dropout consiste en ``silenciar'' neuronas
+o campos receptivos durante el proceso feedforward, que a su vez afecta al
+algoritmo backpropagation, dejando una red más dispersa durante el entrenamiento
+evitando ajustar todos los parámetros de la red.
+El parámetro 0.5 significa que se silenciará la mitad de las neuronas/campos
+receptivos.
 
 En \cite{audio_recognition} tienen una red con una única
 capa convolucional pero los filtros tienen tamaño distinto $F \times s$ donde
 $F$ es el número de frecuencias en los espectrogramas y $s$ varía de 3 hasta 25,
-por cada tamaño son 100 filtros. Nosotros dividimos los filtros de distinto
-tamaño (o resolución) en distintos clasificadores y los juntamos en un clasificador
-colectivo.
-
-Tenemos una capa de dropout para evitar sobreajuste al final de las capas
-convolucionales y un perceptrón multicapa al final de la arquitectura que realiza
-la clasificación con \textit{softmax}. Buscamos minimizar el error con
-entropía cruzada.
+por cada tamaño son 100 filtros. Nosotros seguimos su idea de usar muchos
+de filtros y ventanas de tiempo grandes para obtener características abstractas
+de los expectrogramas.
 
 La implementación se realizó en el lenguaje de programación \textsc{Python 3},
 con el módulo \textsc{Keras} usando \textsc{TensorFlow} como backend.
 
 \section{Experimentación}
 
-Este clasificador esta dividido en 5 clasificadores mas pequeños, cada uno es una red convolucional, pero con la
-misma arquitectura, es decir, son homogéneos entre ellos. El entrenamiento se realizo con una biblioteca de
+Este clasificador esta dividido en 5 clasificadores más pequeños, cada uno es una red convolucional, pero con la
+misma arquitectura, es decir, son homogéneos entre ellos. El entrenamiento se realizó con una biblioteca de
 imágenes, las cuales corresponden a los espectrogramas de los clips de 30 segundos antes descritos, a estos se les
-dio un tratamiento especial, todos los espectrogramas tienen las mismas dimensiones, esto es necesario por razones
+dió un tratamiento especial, todos los espectrogramas tienen las mismas dimensiones, esto es necesario por razones
 de implementación.
 
-El entrenamiento del clasificador colectivo se hace por partes, como en este caso se utilizo uno que esta
+El entrenamiento del clasificador colectivo se hace por partes, como en este caso se utilizó uno que esta
 compuesto de cinco clasificadores que a su vez son redes convolucionales, cada una de estas redes se entrenan por
 separado con diferentes subconjuntos del dataset completo, esto es lo que hace que tengan diferentes resultados a
-pesar de ser la misma red en cuanto a arquitectura. Se comenzó con cien epochs para entrenar a cada red, pero
+pesar de ser la misma red en cuanto a arquitectura. Se comenzó con cien épocas para entrenar a cada red, pero
 notamos un sobreajuste considerable, fuimos disminuyendo estas hasta que llegamos a que la mejor cantidad de
-epochs fue de quince. Los resultados obtenidos en este entrenamiento se presentan a continuación.
+épocas fue de quince. Los resultados obtenidos en este entrenamiento se presentan a continuación.
 
 \section{Resultados}
 
-En el primer intento de entrenamiento que se probo (cien epochs), se obtuvo un porcentaje de precisión del 6\%, las diferentes componentes de este también tenían una precisión muy baja. Después de hacer el ajuste del clasificador, se obtuvieron mejores resultados:
+En el primer intento de entrenamiento que se probó (una capa convolucional, entrenamiento por cien épocas), se obtuvo un porcentaje de precisión del 6\%, las diferentes componentes de este también tenían una precisión muy baja. Después de hacer el ajuste del clasificador (agregar una segunda capa convolucional y quince épocas), se obtuvieron mejores resultados:
 \begin{itemize}
 \item Clasificador 1: 11\% de precisión
-\item Clasificador 1: 12\% de precisión
-\item Clasificador 1: 12\% de precisión
-\item Clasificador 1: 12\% de precisión
-\item Clasificador 1: 13\% de precisión
+\item Clasificador 2: 12\% de precisión
+\item Clasificador 3: 12\% de precisión
+\item Clasificador 4: 12\% de precisión
+\item Clasificador 5: 13\% de precisión
 \end{itemize}
 
 De esto se obtuvo una precisión del clasificador colectivo de 15.66\% del dataset de pruebas.
 
-
 \section{Conclusiones}
 
-Como conclusión de este proyecto, en conjunto con el primer proyecto realizado, podemos decir que un espectrograma, ni solo la letra de canciones, son suficientes para poder encontrar un patrón en estas que ayuden a distinguir los géneros a los que pertenecen. Esto por que existen patrones en los espectrogramas que se repiten entre los distintos géneros que hace difícil encontrar patrones distintos entre géneros. Por ejemplo, la música electrónica y el rap/trap de hoy en día tiene una base muy fuerte con los bajos y estos se ven representados de manera similar en los espectrogramas.
+Como conclusión de este proyecto, en conjunto con el primer proyecto realizado, podemos decir que un espectrograma, ni solo la letra de canciones, son suficientes para poder encontrar un patrón en estas que ayuden a distinguir los géneros a los que pertenecen. Esto por que existen patrones en los espectrogramas que se repiten entre los distintos géneros que hace difícil encontrar patrones distintivos entre géneros. Por ejemplo, la música electrónica y el rap/trap de hoy en día tiene una base muy fuerte con los bajos y estos se ven representados de manera similar en los espectrogramas.
 
-Hoy en día se tienen sistemas que ya clasifican música, pero solamente por canción y no por genero. Un sistema en especifico, Shazam, es capaz de reconocer canciones con el simple hecho de escucharla. La pregunta que se queda abierta es ¿se podrá reconocer el genero con un acercamiento parecido al que tiene este sistema, el cual se sabe que también usa redes neuronales?
-
-
+Hoy en día se tienen sistemas que ya clasifican música, pero solamente por canción y no por género. Un sistema en especifico, Shazam, es capaz de reconocer canciones con el simple hecho de escucharla por pocos segundos. La pregunta que se queda abierta es ¿se podrá reconocer el género con un acercamiento parecido al que tiene este sistema, el cual se sabe que también usa redes neuronales?
 
 \begin{thebibliography}{9}
 \bibitem{scholarpedia}
