@@ -123,12 +123,13 @@ class Ensemble (object):
       
       i += 1
 
-    self._score()
+    self._score(*validation_data)
 
     return self
 
-  def predict (X):
-    """Calcula la clase a la que corresponden las muestras en el conjunto dado.
+  def predict_classifiers (self,X):
+    """Calcula la clase a la que corresponden las muestras en el conjunto dado
+    para cada clasificador.
 
     Parametros:
     -----------
@@ -154,14 +155,32 @@ class Ensemble (object):
     
     return v_cls,l_cls
 
-  def _score (self, X, y):
-    _,cls = self.predict(X)
+  def predict (self,X):
+    """Calcula la clase a la que corresponden las muestras en el conjunto dado.
+
+    Parametros:
+    -----------
+    X : array
+      El conjunto de muestras.
+
+    Regresa:
+    --------
+    ensemble_cls : array [n_samples]
+      La lista con las etiquetas de cada muestra.
+    """
+    _,cls = self.predict_classifiers (X)
     cls = np.array(cls)
     ensemble_cls = stats.mode (cls).mode[0]
+    return ensemble_cls
+
+
+  def _score (self, X, y):
+    # Calcula la precision del ensemble
+    cls = self.predict(X)
 
     cls_true = np.argmax(y,axis = 1)
     
-    K = (ensemble_cls == cls_true)
+    K = (cls == cls_true)
     percent = (np.linalg.norm(K,0)/K.shape)*100.
 
     print('Ensemble classifier.\nAccuracy on test set: %2.2f %%' % percent)
