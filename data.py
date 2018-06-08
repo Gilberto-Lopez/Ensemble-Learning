@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Jun  6 18:16:05 2018
-
-@author: gilisaac
-"""
 
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import misc
-from sklearn.utils import resample
 
 def load_dataset ():
   """Carga el dataset de imagenes de espectrogramas que estan en el directorio
@@ -44,34 +38,3 @@ def load_dataset ():
   y = np.array(y)
 
   return X,y
-
-def bootstrap_set (S, labels, size, seed = None):
-  """Genera una muestra aleatoria con remplazo de S del tamaño indicado.
-
-  Parametros:
-  -----------
-  S : np.array
-    El dataset de donde se extraera la muestra.
-  labels : np.array
-    Las etiquetas de los elementos de S.
-  size : int
-    El tamaño de la muestra.
-  seed : int, default: None
-    Semilla para el generador de numeros aleatorios de NumPy.
-
-  Regresa:
-  --------
-  train_set : np.array
-    La muestra aleatoria.
-  test_labels : np.array
-    Las etiquetas de los elementos de la muestra aleatoria
-  """
-  if seed:
-    np.random.seed(seed)
-
-  idx = resample(np.arange(S.shape[0]),replace = True,n_samples = size)
-
-  train_set = S[idx]
-  train_labels = labels[idx]
-
-  return train_set,train_labels
