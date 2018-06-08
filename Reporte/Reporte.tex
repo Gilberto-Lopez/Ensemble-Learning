@@ -243,13 +243,27 @@ En el primer intento de entrenamiento que se probó (una capa convolucional, ent
 \item Clasificador 5: 13\% de precisión
 \end{itemize}
 
-De esto se obtuvo una precisión del clasificador colectivo de 15.66\% del dataset de pruebas.
+De esto se obtuvo una precisión del clasificador colectivo de 15.66\% del dataset de pruebas. A pesar de que el
+desempeño de este clasificador no es lo esperado, este se ve bastante beneficiado al usar la decisión conjunta de
+las redes, es decir la votación de si esta bien o mal clasificado. Se pensó en añadir mas redes al clasificador,
+pero no se cree que esto mejore sustancialmente la precisión pero si nos puede ayudar a asegurar que cuando las
+clasificaciones que hace, son correctas, en caso de acertar.
 
 \section{Conclusiones}
 
-Como conclusión de este proyecto, en conjunto con el primer proyecto realizado, podemos decir que un espectrograma, ni solo la letra de canciones, son suficientes para poder encontrar un patrón en estas que ayuden a distinguir los géneros a los que pertenecen. Esto por que existen patrones en los espectrogramas que se repiten entre los distintos géneros que hace difícil encontrar patrones distintivos entre géneros. Por ejemplo, la música electrónica y el rap/trap de hoy en día tiene una base muy fuerte con los bajos y estos se ven representados de manera similar en los espectrogramas.
+Como conclusión de este proyecto, en conjunto con el primer proyecto realizado, podemos decir que un
+espectrograma, ni solo la letra de canciones, son suficientes para poder encontrar un patrón en estas que ayuden a
+distinguir los géneros a los que pertenecen. Esto por que existen patrones en los espectrogramas que se repiten
+entre los distintos géneros que hace difícil encontrar patrones distintivos entre géneros. Por ejemplo, la música
+electrónica y el rap/trap de hoy en día tiene una base muy fuerte con los bajos y estos se ven representados de
+manera similar en los espectrogramas, esto se podría comprobar si se observará la matriz de confusión de los clasificadores individuales y del colectivo.
 
-Hoy en día se tienen sistemas que ya clasifican música, pero solamente por canción y no por género. Un sistema en especifico, Shazam, es capaz de reconocer canciones con el simple hecho de escucharla por pocos segundos. La pregunta que se queda abierta es ¿se podrá reconocer el género con un acercamiento parecido al que tiene este sistema, el cual se sabe que también usa redes neuronales?
+Hoy en día se tienen sistemas que ya clasifican música, pero solamente por canción y no por género. Un sistema en
+especifico, Shazam, es capaz de reconocer canciones con el simple hecho de escucharla por pocos segundos. La
+pregunta que se queda abierta es ¿se podrá reconocer el género con un acercamiento parecido al que tiene este
+sistema, el cual se sabe que también usa redes neuronales?, se cree que si, pero primero se debe detectar, de
+alguna manera, si los géneros se parecen entre si y poder escoger características mejores y con base en esto poder
+tomar un mejor curso de acción a la hora de clasificar.
 
 \begin{thebibliography}{9}
 \bibitem{scholarpedia}
